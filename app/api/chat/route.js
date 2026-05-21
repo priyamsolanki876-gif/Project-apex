@@ -5,7 +5,7 @@ export async function POST(req) {
     const { prompt } = await req.json();
     // Ye line Vercel ke Environment Variables se hi key uthayegi
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent(prompt);
     return new Response(JSON.stringify({ text: result.response.text() }));
