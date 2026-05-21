@@ -1,32 +1,17 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
-
-export async function POST(request) {
+export async function POST(req) {
   try {
-    const { prompt } = await request.json();
-
-    if (!prompt || prompt.trim() === '') {
-      return Response.json(
-        { error: 'Prompt cannot be empty' },
-        { status: 400 }
-      );
+    const { prompt } = await req.json();
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+        return new Response(JSON.stringify({ error: "API Key missing" }), { status: 500 });
     }
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-
-    return Response.json(
-      { response: text },
-      { status: 200 }
-    );
+    return new Response(JSON.stringify({ text: result.response.text() }));
   } catch (error) {
-    console.error('API Error:', error);
-    return Response.json(
-      { error: 'Failed to generate response. Please check your API key and try again.' },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
