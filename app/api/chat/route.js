@@ -4,9 +4,7 @@ export async function POST(req) {
   try {
     const { prompt } = await req.json();
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
-    
-    // Yahan gemini-1.5-flash hi use kar rahe hain
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
